@@ -1,0 +1,74 @@
+/* Phone */
+
+.bio {
+    padding: 0em 1em;
+    margin: 0 1em 2em;
+    text-align: justify;
+}
+
+/* Make this global for site */
+
+.projects {
+    h2 {
+        padding-left: 1.3em;
+    }
+}
+
+.projectcard {
+    padding: 1.5em;
+    margin: 1em 1em;
+    border: 2px solid black;
+    border-radius: 15px;
+    img {
+        width: 100%;
+    }
+    a:link, a:visited, a:active {
+        color: black;
+        text-decoration: none;
+    }
+}
+
+/* Tablet */
+
+@media (min-width: 768px) {
+}
+
+/* Desktop 1280 x 1024 */
+
+@media (min-width: 1280px) {
+    
+    .projectcard {
+        border: 2px solid black;
+        padding: 1.5em;
+        border-radius: 15px;
+        font-family: serif, 'Footlight MT Light';
+        
+        h4 {
+            letter-spacing: .1em;
+        }
+    
+        img {
+            width: 50%;
+        }
+    }
+}
+
+/* Desktop 1920 x 1080 */
+
+@media (min-width: 1080px) {
+    
+    .projectcard {
+        border: 2px solid black;
+        padding: 1.5em;
+        border-radius: 15px;
+        font-family: serif, 'Footlight MT Light';
+        
+        h4 {
+            letter-spacing: .1em;
+        }
+    
+        img {
+            width: 50%;
+        }
+    }
+}
