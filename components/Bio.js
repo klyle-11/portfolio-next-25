@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import Card from './Card';
-import { StaticRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import styles from './Bio.module.scss';
 import styled from 'styled-components';
 
@@ -48,31 +48,42 @@ export default function Bio() {
 }, []);
 
     return(
-        <Router>
-            <Switch>
         <div>
             <div className={styles.bio}>
             <div>
                 <h2>Khalil Abdellah</h2>
                 <p className='serif'>khalil.mktg@gmail.com</p>
                     <p>
-                        I'm a recent graduate in Marketing from Temple University, 
-                        building skills and looking for experience in UX, web development, and SEO. This site was built using Next.js and React Hooks. <br/><br/>
-                        My biggest interest now is using UX design principles for journalism, communication design, and accessible tools that aid learning in all stages of life.
+                        Full-Stack Software Engineer with background in developing modernized React.js and Typescript services, Java SpringBoot, and C++
+application development, CI/CD (contract testing, component testing, Jenkins and Spinnaker deployment pipeline automation), and
+site reliability engineering skills such as monitoring, logging, etc.
                     </p>
-                    <p><a href='/resume621.pdf' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://twitter.com/abdellica' target='_blank' rel='noreferrer'>Twitter</a></p>
+                    <p><a href='/resume925.pdf' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>
             </div>
 
             </div>
         <div className={styles.projects}>
             <h2>Projects</h2>
             <hr />
-            <div className={styles.projectcard} >
-                <Link to='/datajournalism'><h3 className='serif'>Plastic Bag Props</h3></Link>
+            <div className={styles.projectcard}>
+                <h3 className='serif'>Chase Offers Demo</h3>
                 <p>
-                    Data visualization using Tableau, with editorial. Data analysis using Python and Pandas. <Link to='/datajournalism'>Click for article.</Link>
+                    Demo of Chase Offers, a mobile and web app I took from Figma to Production with my team. Reusable Storybook.js & React.ts components, and a Reactive Java Spring Boot backend.
+                    This walkthrough highlights the UX flows, performance and feature toggles.
                 </p>
-                <Link to='/datajournalism' >
+                <video controls preload='metadata'>
+                    <source src='/chaseoffersdemo.mp4' type='video/mp4' />
+                </video>
+            </div>
+            <hr />
+            <div className={styles.projectcard} >
+                <Link href='/datajournalism'>
+                    <h3 className='serif'>Plastic Bag Props</h3>
+                </Link>
+                <p>
+                    Data visualization using Tableau, with editorial. Data analysis using Python and Pandas. <Link href='/datajournalism'>Click for article.</Link>
+                </p>
+                <Link href='/datajournalism'>
                     <TableauStyle>
                     <div className='tableauPlaceholder' id='viz1622950425084'>
                         <noscript>
@@ -115,7 +126,5 @@ export default function Bio() {
             <hr/>
         </div>
         </div>
-        </Switch>
-        </Router>
     );
 }
