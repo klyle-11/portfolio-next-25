@@ -102,8 +102,9 @@ h5 {
 }
 
 #sessioncontrols > img {
-  width: 20%;
-  padding: 1em;
+  width: 12%;
+  max-width: 48px;
+  padding: 0.35em;
 }
 
 

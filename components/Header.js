@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './Header.module.scss';
 
@@ -14,6 +15,35 @@ import styles from './Header.module.scss';
 // }
 
 export default function Header() {
+    const [constructionDate, setConstructionDate] = useState('');
+    const [constructionTime, setConstructionTime] = useState('');
+
+    useEffect(() => {
+        const updateTimestamp = () => {
+            const now = new Date();
+            const formattedDate = new Intl.DateTimeFormat('en-GB', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'America/New_York',
+            }).format(now);
+            const formattedTime = new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/New_York',
+            }).format(now);
+
+            setConstructionDate(formattedDate);
+            setConstructionTime(`${formattedTime} EST`);
+        };
+
+        updateTimestamp();
+        const intervalId = setInterval(updateTimestamp, 60000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     return(
         <div className={styles.spacers}>
             <div className='spacer'></div>
@@ -23,14 +53,15 @@ export default function Header() {
                     <li><a href='mailto:khalil.mktg@gmail.com'>khalil.mktg@gmail.com</a></li>
                     <li><a href='/resume925.pdf' target='_blank' rel="noreferrer">resume</a></li>
                 </ul>
-                <ul className={styles.headerul}>
+                {/* <ul className={styles.headerul}>
                     <li><Link href='/'>home</Link></li>
                     <li>freq.ly used code</li>
                     <li><Link href='/datajournalism'>data journalism</Link></li>
-                    <li>mktg / social media</li>
-                </ul>
+                </ul> */}
                 <ul className={styles.construction}>
-                    <li>Site under construction..</li>
+                    {/* <li>Site under construction..</li> */}
+                    {constructionDate && <li>{constructionDate}</li>}
+                    {constructionTime && <li>{constructionTime}</li>}
                     {/* <li>Philadelphia, PA</li>
                     <li><img src={url} alt='icon depicting current weather forecast'/><h5>{temp}&#176;</h5></li> */}
                 </ul>
