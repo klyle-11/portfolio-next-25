@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import fs from 'fs';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import Bio from '../components/Bio';
+import { getPostSlugs } from '../lib/posts';
 
 
 const HomeStyle = styled.div`
@@ -49,10 +49,9 @@ export default function Home({slugs}) {
 }
 
 export const getStaticProps = async () => {
-  const files = fs.readdirSync('posts');
   return {
     props: {
-      slugs: files.map(filename => filename.replace('.md', ''))
+      slugs: await getPostSlugs()
     }
   }
 }
