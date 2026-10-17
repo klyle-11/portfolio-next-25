@@ -1,42 +1,56 @@
 # portfolio-next-25
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Next.js portfolio and blog, deployed on Vercel. Blog posts live in Supabase and are written from a local-only admin editor (`admin/`).
 
-## Getting Started
-
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
+npm install
+npm run dev          # site at http://localhost:3000
 ```
 
-## deploy
-```zsh
+With no Supabase env vars set, the site reads markdown from `posts/`, so it works out of the box.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Next.js dev server (http://localhost:3000) |
+| `npm run build` / `npm start` | Production build / serve it |
+| `npm run migrate-posts` | One-off: copy `posts/*.md` into Supabase as published posts |
+| `npm run admin:install` | Install the admin's dependencies (run once) |
+| `npm run admin` | Admin editor in the browser at http://127.0.0.1:4317 (hot reload) |
+| `npm run admin:build` then `npm run admin:start` | Admin using the built UI |
+| `npm run admin:app` | Admin as a desktop window (Tauri dev; needs Rust) |
+| `npm run admin:app:build` | Build an installable desktop app |
+
+## Blog setup (one time)
+
+1. Create a Supabase project, then run `supabase/schema.sql` in Dashboard → SQL Editor.
+2. Copy the project URL, the `anon` key and the `service_role` key (Project Settings → API Keys).
+3. Generate a revalidate secret: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+4. In Vercel → Settings → Environment Variables, add `SUPABASE_URL`, `SUPABASE_ANON_KEY` (anon, **not** service) and `REVALIDATE_SECRET`, then redeploy.
+5. Create the admin config: `cp admin/.env.example admin/.env` and fill in `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SITE_URL` (your Vercel URL) and the same `REVALIDATE_SECRET`.
+6. Import the existing posts: `SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run migrate-posts`
+7. For the site to show Supabase posts locally, put `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env.local` at the repo root.
+
+## Writing posts (the admin)
+
+```bash
+npm run admin:install   # once
+npm run admin           # open http://127.0.0.1:4317
+```
+
+There is no login: the admin only listens on `127.0.0.1`, and the service key lives in `admin/.env` on your machine (gitignored, excluded from Vercel via `.vercelignore`). The public site only has the read-only anon key. Publishing calls `/api/revalidate` on the site, so changes go live immediately. Press Ctrl/Cmd+S to save. See [`admin/README.md`](admin/README.md) for the security model, editor shortcuts, images and the desktop app.
+
+## Deploy
+
+```bash
 npx vercel --prod
-
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Troubleshooting
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **Site shows old posts:** `SUPABASE_URL`/`SUPABASE_ANON_KEY` aren't set for that environment, so it's falling back to `posts/`.
+- **Publish doesn't update the live site:** check `SITE_URL` and `REVALIDATE_SECRET` in `admin/.env` match Vercel (secret must be 32+ chars).
+- **Port in use:** set `ADMIN_PORT` in `admin/.env` (the desktop app expects 4317).
