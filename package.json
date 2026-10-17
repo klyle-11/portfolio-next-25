@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next export"
+    "export": "next export",
+    "migrate-posts": "node scripts/migrate-posts.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@use-it/interval": "^1.0.0",
     "css-loader": "^5.2.6",
     "file-loader": "^6.2.0",
