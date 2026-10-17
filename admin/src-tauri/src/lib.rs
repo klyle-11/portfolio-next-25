@@ -62,7 +62,7 @@ pub fn run() {
             }
 
             WebviewWindowBuilder::new(app, "main", WebviewUrl::External(ADMIN_URL.parse().unwrap()))
-                .title("Blog Admin")
+                .title("Portfolio site admin")
                 .inner_size(1280.0, 840.0)
                 .min_inner_size(820.0, 520.0)
                 .build()?;

@@ -38,3 +38,5 @@ next-env.d.ts
 # large video assets
 public/chaseoffersdemo*.mov
 public/chaseoffersdemo*.mp4
+
+review.md
