@@ -1,11 +1,14 @@
-/* Rainbow syntax colors for code blocks (highlight.js classes).
-   Copied from styles/code-theme.css on the site, keep the two in sync so the editor matches the site. */
+/* Syntax colors for code blocks (highlight.js classes): light background, IDE-style token
+   colors based on VS Code's Light+ theme.
+   Copied from styles/code-theme.css on the site, keep the two in sync. */
 pre.code-block, .tiptap pre {
   position: relative;
-  background: #1d163e;
-  color: #f4f2ff;
+  background: #f8f8f4;
+  color: #1f1f1f;
+  border: 1px solid #dddbe8;
+  border-left: 3px solid #1d163e;
   padding: 1.1em 1.2em;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow-x: auto;
   line-height: 1.5;
   font-size: 0.9em;
@@ -13,7 +16,7 @@ pre.code-block, .tiptap pre {
 pre.code-block code, .tiptap pre code {
   color: inherit;
   background: none;
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
 }
 pre.code-block[data-lang]::before {
   content: attr(data-lang);
@@ -23,19 +26,21 @@ pre.code-block[data-lang]::before {
   font-size: 0.75em;
   letter-spacing: 0.15em;
   text-transform: lowercase;
-  color: #a9a3d6;
+  color: #8a879c;
 }
 
-.hljs-comment, .hljs-quote { color: #8f88b8; font-style: italic; }
-.hljs-keyword, .hljs-selector-tag, .hljs-doctag { color: #ff6b9d; }
-.hljs-built_in, .hljs-type, .hljs-class .hljs-title, .hljs-title.class_ { color: #ffd166; }
-.hljs-title, .hljs-title.function_, .hljs-section { color: #5ec8ff; }
-.hljs-string, .hljs-regexp, .hljs-template-tag, .hljs-addition { color: #7ee787; }
-.hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet { color: #ff9f43; }
-.hljs-attr, .hljs-attribute, .hljs-variable, .hljs-template-variable, .hljs-params { color: #c39bff; }
-.hljs-meta, .hljs-meta .hljs-keyword, .hljs-annotation { color: #48e5c2; }
-.hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class { color: #ff6b6b; }
-.hljs-property, .hljs-operator, .hljs-punctuation { color: #e2dcff; }
-.hljs-deletion { color: #ff6b6b; }
+.hljs-comment, .hljs-quote { color: #008000; font-style: italic; }
+.hljs-keyword, .hljs-literal, .hljs-selector-tag, .hljs-doctag { color: #0000ff; }
+.hljs-built_in, .hljs-type, .hljs-title.class_, .hljs-class .hljs-title { color: #267f99; }
+.hljs-title, .hljs-title.function_, .hljs-section { color: #795e26; }
+.hljs-string, .hljs-template-tag, .hljs-addition { color: #a31515; }
+.hljs-regexp { color: #811f3f; }
+.hljs-number, .hljs-symbol, .hljs-bullet { color: #098658; }
+.hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-params, .hljs-property { color: #001080; }
+.hljs-attribute { color: #e50000; }
+.hljs-meta, .hljs-meta .hljs-keyword { color: #af00db; }
+.hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class { color: #800000; }
+.hljs-operator, .hljs-punctuation { color: #1f1f1f; }
+.hljs-deletion { color: #a31515; background: #ffecec; }
 .hljs-emphasis { font-style: italic; }
 .hljs-strong { font-weight: bold; }
