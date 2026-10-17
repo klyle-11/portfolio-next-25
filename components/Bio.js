@@ -29,6 +29,10 @@ const TableauStyle = styled.div`
 // Text editable from the blog admin (keys are stored in Supabase site_blocks).
 // These are the defaults until a block has been saved once.
 export const BIO_BLOCKS = {
+    'home.subtitle': {
+        label: 'Subtitle (under name)',
+        fallback: 'Full-Stack Software Engineer'
+    },
     'home.bio': {
         label: 'Bio',
         fallback: `Full-Stack Software Engineer with background in developing modernized React.js and Typescript services, Java SpringBoot, and C++
@@ -50,8 +54,8 @@ This walkthrough highlights the UX flows, performance and feature toggles.`
     }
 };
 
-const EditableText = ({ id, blocks }) => (
-    <Block id={id} label={BIO_BLOCKS[id].label} md={blocks[id]} fallback={BIO_BLOCKS[id].fallback} />
+const EditableText = ({ id, blocks, className }) => (
+    <Block id={id} label={BIO_BLOCKS[id].label} md={blocks[id]} fallback={BIO_BLOCKS[id].fallback} className={className} />
 );
 
 const FigmaStyle = styled.div`
@@ -81,6 +85,7 @@ export default function Bio({ blocks = {}, projects = [] }) {
             <div className={styles.bio}>
             <div>
                 <h2>Khalil Abdellah</h2>
+                <EditableText id='home.subtitle' blocks={blocks} className={`serif ${styles.subtitle}`} />
                 <p className='serif'>khalil.mktg@gmail.com</p>
                     <EditableText id='home.bio' blocks={blocks} />
                     <p><a href='/resume' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>

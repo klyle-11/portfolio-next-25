@@ -134,3 +134,13 @@
         max-width: 600px;
     }
 }
+/* serif line under the name, editable from the blog admin (home.subtitle) */
+.subtitle {
+    font-size: 1.15em;
+    font-style: italic;
+    color: #1d163e;
+
+    p {
+        margin: 0.3em 0 0;
+    }
+}
