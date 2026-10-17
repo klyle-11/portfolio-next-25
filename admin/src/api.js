@@ -20,14 +20,14 @@ export const getHealth = () => request('/api/health');
 
 export const listPosts = () => request('/api/posts');
 
-export function savePost({ id, slug, title, description, content_md, status, published_at }) {
-  const body = { slug, title, description, content_md, status, published_at };
+export function savePost({ id, slug, title, description, content_md, status, kind, project_date, project_date_precision }) {
+  const body = { slug, title, description, content_md, status, kind, project_date, project_date_precision };
   return id ? request(`/api/posts/${id}`, { method: 'PATCH', body }) : request('/api/posts', { method: 'POST', body });
 }
 
-export const getDateHistory = id => request(`/api/posts/${id}/history`);
+export const getPostHistory = id => request(`/api/posts/${id}/history`);
 
-export const deletePost =id => request(`/api/posts/${id}`, { method: 'DELETE' });
+export const deletePost = id => request(`/api/posts/${id}`, { method: 'DELETE' });
 
 export async function uploadImage(file) {
   const { url } = await request(`/api/images?name=${encodeURIComponent(file.name)}`, {

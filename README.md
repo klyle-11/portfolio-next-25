@@ -23,6 +23,8 @@ With no Supabase env vars set, the site reads markdown from `posts/`, so it work
 | `npm run admin:build` then `npm run admin:start` | Admin using the built UI |
 | `npm run admin:app` | Admin as a desktop window (Tauri dev; needs Rust) |
 | `npm run admin:app:build` | Build an installable desktop app |
+| `npm run admin:startup` | Windows: start the desktop admin (dev) when you sign in |
+| `npm run admin:startup:remove` | Windows: stop starting it on sign-in |
 
 ## Blog setup (one time)
 
@@ -40,6 +42,14 @@ With no Supabase env vars set, the site reads markdown from `posts/`, so it work
 npm run admin:install   # once
 npm run admin           # open http://127.0.0.1:4317
 ```
+
+The admin shows your site (live, or `localhost:3000`) with the editor docked on the right. Use **Sidebar / Half / Full / Hide** in the top bar to size it.
+
+- **Page text:** hover any outlined text in the preview (bio, project blurbs) and click **✎ edit**. It saves to the `site_blocks` table and the page refreshes.
+- **Posts:** each post is a **blog post** or a **project**, and **public** or **private**. Projects appear in the home page's Projects section with their project date, shown as `2026`, `October 2026` or `17 October 2026`.
+- **Dates:** the database sets the drafted and first-published times and never changes them, so switching public/private never reorders the blog. The project date is editable. Every public/private switch and project date change is kept in an admin-only history under the post header.
+- **Resume:** click the small ⤒ next to "resume" in the preview's header to upload a new PDF. `/resume` on the site always serves the latest one.
+- **Code blocks:** type ````java` (or js, python, …) and press Enter for a syntax-colored block. In rtf mode, pick the language from the toolbar. Switch to `.md` to edit the raw markdown.
 
 There is no login: the admin only listens on `127.0.0.1`, and the service key lives in `admin/.env` on your machine (gitignored, excluded from Vercel via `.vercelignore`). The public site only has the read-only anon key. Publishing calls `/api/revalidate` on the site, so changes go live immediately. Press Ctrl/Cmd+S to save. See [`admin/README.md`](admin/README.md) for the security model, editor shortcuts, images and the desktop app.
 

@@ -3,18 +3,23 @@ import { listPosts, savePost, deletePost, uploadImage, revalidate } from '../api
 import { splitFrontmatter } from '../markdown';
 import RichEditor from './RichEditor';
 import ConfirmDialog from './ConfirmDialog';
-import DateField from './DateField';
-import DateHistory from './DateHistory';
-import { openExternal, today } from '../site';
+import ProjectDate from './ProjectDate';
+import PostHistory from './PostHistory';
+import { formatLongDate, openExternal } from '../site';
 
 const slugify = text => text.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 // status 'published' = public on the site, 'draft' = private (only visible here).
-// Switching between them never touches published_at, so a post keeps its place in the blog.
+// drafted_at / published_at are set and locked by the database, so switching visibility never
+// moves a post in the blog. The project date is the editable one (logged in post_history).
 const VISIBILITY = { published: 'public', draft: 'private' };
+const KINDS = { blog: 'blog post', project: 'project' };
 
-const emptyPost = () => ({ id: null, slug: '', title: '', description: '', content_md: '', status: 'draft', published_at: today() });
+const emptyPost = () => ({
+  id: null, slug: '', title: '', description: '', content_md: '', status: 'draft',
+  kind: 'blog', project_date: null, project_date_precision: 'day'
+});
 
 // focusSlug: the post open in the site preview, so navigating there opens it here.
 // onSiteChanged: called after the live site was refreshed, so the preview can reload.
@@ -75,7 +80,6 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
     const next = { ...draft, ...overrides };
     if (!next.title.trim()) return flash('error', 'Add a title first');
     if (!next.slug) return flash('error', 'Add a slug (the URL part, like my-first-post)');
-    if (next.status === 'published' && !next.published_at) next.published_at = new Date().toISOString();
 
     setBusy(true);
     try {
@@ -136,14 +140,12 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
   const importMarkdown = async file => {
     const { data, content } = splitFrontmatter(await file.text());
     const title = data.title || file.name.replace(/\.(md|markdown)$/i, '');
-    const date = data.date ? new Date(data.date) : null;
     guard(() => load({
       ...emptyPost(),
       title,
       slug: slugify(data.slug || file.name.replace(/\.(md|markdown)$/i, '')),
       description: data.description || '',
-      content_md: content.trim(),
-      published_at: date && !isNaN(date) ? date.toISOString() : today()
+      content_md: content.trim()
     }, { importedMarkdown: true }));
   };
 
@@ -188,6 +190,7 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
             <li key={post.id}>
               <button className={post.id === draft.id ? 'selected' : ''} onClick={() => post.id !== draft.id && guard(() => load(post))}>
                 <span className="post-title">{post.title || 'Untitled'}</span>
+                {post.kind === 'project' && <span className="badge">project</span>}
                 <span className={`badge ${post.status}`}>{VISIBILITY[post.status] || post.status}</span>
               </button>
             </li>
@@ -213,7 +216,7 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
                 onChange={e => { setSlugTouched(true); update({ slug: slugify(e.target.value) }); }}
               />
             </label>
-            <DateField value={draft.published_at} onChange={published_at => update({ published_at })} />
+            <Toggle label="Kind" options={KINDS} value={draft.kind} onChange={kind => update({ kind })} />
             <div className="visibility" role="radiogroup" aria-label="Visibility">
               {Object.entries(VISIBILITY).map(([status, label]) => (
                 <button
@@ -229,7 +232,15 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
               ))}
             </div>
           </div>
-          <DateHistory postId={saved?.id} version={saved?.updated_at} />
+          {draft.kind === 'project' && (
+            <ProjectDate value={draft.project_date} precision={draft.project_date_precision} onChange={update} />
+          )}
+          <p className="timestamps muted">
+            {saved
+              ? <>Drafted {formatLongDate(saved.drafted_at)} · {saved.published_at ? <>Published {formatLongDate(saved.published_at)}</> : 'never published'}</>
+              : 'Not saved yet'}
+          </p>
+          <PostHistory postId={saved?.id} version={saved?.updated_at} />
           <input
             className="description-input"
             placeholder="Short description (used for the page's meta description)"
@@ -263,6 +274,18 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
       </main>
 
       {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
+    </div>
+  );
+}
+
+function Toggle({ label, options, value, onChange }) {
+  return (
+    <div className="visibility" role="radiogroup" aria-label={label}>
+      {Object.entries(options).map(([key, text]) => (
+        <button key={key} type="button" role="radio" aria-checked={value === key} className={value === key ? 'active' : ''} onClick={() => value !== key && onChange(key)}>
+          {text}
+        </button>
+      ))}
     </div>
   );
 }

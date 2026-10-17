@@ -21,7 +21,8 @@ const ALLOWED_HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`]);
 const BUCKET = 'post-images';
 const FILES_BUCKET = 'site-files';
 const RESUME_OBJECT = 'resume.pdf';
-const POST_FIELDS = ['slug', 'title', 'description', 'content_md', 'status', 'published_at'];
+// drafted_at / published_at are deliberately not writable: the database sets and locks them
+const POST_FIELDS = ['slug', 'title', 'description', 'content_md', 'status', 'kind', 'project_date', 'project_date_precision'];
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 
 function loadEnv(file) {
@@ -58,7 +59,7 @@ async function supabase(pathname, { method = 'GET', headers = {}, body } = {}) {
   return data;
 }
 
-const COLUMNS = 'id,slug,title,description,content_md,status,published_at,updated_at';
+const COLUMNS = 'id,slug,title,description,content_md,status,kind,project_date,project_date_precision,drafted_at,published_at,updated_at';
 const json = { 'Content-Type': 'application/json', Prefer: 'return=representation' };
 const pickPostFields = body => Object.fromEntries(POST_FIELDS.filter(k => k in body).map(k => [k, body[k]]));
 const isUuid = id => /^[0-9a-f-]{36}$/i.test(id);
@@ -83,9 +84,9 @@ const api = {
     return rows[0];
   },
 
-  // every date the post has had, newest first (written by a trigger, see supabase/schema.sql)
+  // drafted / public / private / project date log, newest first (written by a trigger, see supabase/schema.sql)
   'GET /api/posts/:id/history': ({ id }) =>
-    supabase(`/rest/v1/post_date_history?post_id=eq.${id}&select=old_published_at,new_published_at,changed_at&order=changed_at.desc`),
+    supabase(`/rest/v1/post_history?post_id=eq.${id}&select=event,old_value,new_value,changed_at&order=changed_at.desc,id.desc`),
 
   'DELETE /api/posts/:id': async ({ id }) => {
     await supabase(`/rest/v1/posts?id=eq.${id}`, { method: 'DELETE' });

@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 admin/.env
+startup.log

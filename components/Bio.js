@@ -62,7 +62,7 @@ const FigmaStyle = styled.div`
 `
 
 
-export default function Bio({ blocks = {} }) {
+export default function Bio({ blocks = {}, projects = [] }) {
     useEffect(() => {
         const fig3 = document.createElement('script');
         
@@ -90,6 +90,19 @@ export default function Bio({ blocks = {} }) {
         <div className={styles.projects}>
             <h2>Projects</h2>
             <hr />
+            {/* project posts written in the blog admin */}
+            {projects.map(project => (
+                <React.Fragment key={project.slug}>
+                    <div className={styles.projectcard}>
+                        <Link href={`/blog/${project.slug}`}>
+                            <h3 className='serif'>{project.title}{project.date && ` (${project.date})`}</h3>
+                        </Link>
+                        {project.description && <p>{project.description}</p>}
+                        <p><Link href={`/blog/${project.slug}`}>Read more.</Link></p>
+                    </div>
+                    <hr />
+                </React.Fragment>
+            ))}
             <div className={`${styles.projectcard} ${styles.splitCard}`}>
                 <div className={styles.projectText}>
                     <h3 className='serif'>Chase Offers Demo (2023-2025)</h3>

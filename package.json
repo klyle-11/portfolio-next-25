@@ -13,7 +13,9 @@
     "admin:build": "npm --prefix admin run build",
     "admin:start": "npm --prefix admin start",
     "admin:app": "npm --prefix admin run app",
-    "admin:app:build": "npm --prefix admin run app:build"
+    "admin:app:build": "npm --prefix admin run app:build",
+    "admin:startup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1",
+    "admin:startup:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1 -Remove"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

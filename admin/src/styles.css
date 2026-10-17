@@ -216,3 +216,11 @@ button.primary:hover:not(:disabled) { background: var(--surface); color: var(--a
 .visibility { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; align-self: center; }
 .visibility button { border: none; border-radius: 0; padding: 4px 12px; font-size: 0.85rem; }
 .visibility button.active { background: var(--accent); color: var(--accent-text); }
+
+/* project date + locked timestamps */
+.project-date { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--muted); font-size: 0.9rem; }
+.project-date select, .project-date input { padding: 4px 6px; }
+.year-input { width: 5.5em; }
+.timestamps { margin: 0; font-size: 0.85rem; }
+.date-history { font-size: 0.85rem; color: var(--muted); }
+.date-history ol { margin: 6px 0 0; padding-left: 20px; }
