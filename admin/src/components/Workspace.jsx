@@ -3,23 +3,14 @@ import { listPosts, savePost, deletePost, uploadImage, revalidate } from '../api
 import { splitFrontmatter } from '../markdown';
 import RichEditor from './RichEditor';
 import ConfirmDialog from './ConfirmDialog';
+import DateField from './DateField';
+import ResumePanel from './ResumePanel';
+import { openExternal, today } from '../site';
 
 const slugify = text => text.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-const emptyPost = () => ({ id: null, slug: '', title: '', description: '', content_md: '', status: 'draft', published_at: null });
-
-// <input type="date"> works in YYYY-MM-DD; store noon UTC so the date doesn't shift across timezones
-const toDateInput = iso => (iso ? iso.slice(0, 10) : '');
-const fromDateInput = value => (value ? `${value}T12:00:00.000Z` : null);
-
-async function openExternal(url) {
-  if (window.__TAURI_INTERNALS__) {
-    const { openUrl } = await import('@tauri-apps/plugin-opener');
-    return openUrl(url);
-  }
-  window.open(url, '_blank', 'noopener');
-}
+const emptyPost = () => ({ id: null, slug: '', title: '', description: '', content_md: '', status: 'draft', published_at: today() });
 
 export default function Workspace({ siteUrl }) {
   const [posts, setPosts] = useState([]);
@@ -143,7 +134,7 @@ export default function Workspace({ siteUrl }) {
       slug: slugify(data.slug || file.name.replace(/\.(md|markdown)$/i, '')),
       description: data.description || '',
       content_md: content.trim(),
-      published_at: date && !isNaN(date) ? date.toISOString() : null
+      published_at: date && !isNaN(date) ? date.toISOString() : today()
     }, { importedMarkdown: true }));
   };
 
@@ -186,6 +177,7 @@ export default function Workspace({ siteUrl }) {
           ))}
           {!posts.length && <li className="muted empty">No posts yet</li>}
         </ul>
+        <ResumePanel siteUrl={siteUrl} onNotice={flash} />
       </aside>
 
       <main className="editor-pane">
@@ -205,10 +197,7 @@ export default function Workspace({ siteUrl }) {
                 onChange={e => { setSlugTouched(true); update({ slug: slugify(e.target.value) }); }}
               />
             </label>
-            <label>
-              <span>Date</span>
-              <input type="date" value={toDateInput(draft.published_at)} onChange={e => update({ published_at: fromDateInput(e.target.value) })} />
-            </label>
+            <DateField value={draft.published_at} onChange={published_at => update({ published_at })} />
           </div>
           <input
             className="description-input"

@@ -19,6 +19,8 @@ const PORT = Number(process.env.ADMIN_PORT) || 4317;
 const HOST = '127.0.0.1'; // never listen on the network
 const ALLOWED_HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`]);
 const BUCKET = 'post-images';
+const FILES_BUCKET = 'site-files';
+const RESUME_OBJECT = 'resume.pdf';
 const POST_FIELDS = ['slug', 'title', 'description', 'content_md', 'status', 'published_at'];
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 
@@ -48,6 +50,9 @@ async function supabase(pathname, { method = 'GET', headers = {}, body } = {}) {
   const data = text ? JSON.parse(text) : null;
   if (!res.ok) {
     if (data?.code === '23505') throw httpError(409, 'Another post already uses that slug');
+    if (data?.code === 'PGRST205' || data?.code === '42P01') {
+      throw httpError(500, 'The posts table is missing in this Supabase project. Run supabase/schema.sql in Dashboard → SQL Editor (and check SUPABASE_URL points at that project), then reload.');
+    }
     throw httpError(res.status, data?.message || data?.error || `Supabase error ${res.status}`);
   }
   return data;
@@ -89,6 +94,30 @@ const api = {
     const objectPath = `${new Date().toISOString().slice(0, 7)}/${Date.now()}-${name}`;
     await supabase(`/storage/v1/object/${BUCKET}/${objectPath}`, { method: 'POST', headers: { 'Content-Type': type }, body: bytes });
     return { url: `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/${BUCKET}/${objectPath}` };
+  },
+
+  'GET /api/resume': async () => {
+    const [file] = await supabase(`/storage/v1/object/list/${FILES_BUCKET}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prefix: '', search: RESUME_OBJECT, limit: 1 })
+    });
+    return file?.name === RESUME_OBJECT
+      ? { uploaded: true, updated_at: file.updated_at, size: file.metadata?.size ?? null }
+      : { uploaded: false };
+  },
+
+  // replaces site-files/resume.pdf in place, so the site's /resume link never changes
+  'POST /api/resume': async ({ req }) => {
+    if (req.headers['content-type'] !== 'application/pdf') throw httpError(400, 'Only PDFs can be uploaded');
+    const bytes = await readBody(req, MAX_IMAGE_BYTES);
+    if (bytes.subarray(0, 5).toString() !== '%PDF-') throw httpError(400, "That file isn't a valid PDF");
+    await supabase(`/storage/v1/object/${FILES_BUCKET}/${RESUME_OBJECT}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/pdf', 'x-upsert': 'true', 'cache-control': 'max-age=60' },
+      body: bytes
+    });
+    return { uploaded: true, updated_at: new Date().toISOString(), size: bytes.length };
   },
 
   'POST /api/revalidate': async ({ body }) => {

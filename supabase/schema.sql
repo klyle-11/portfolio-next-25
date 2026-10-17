@@ -45,3 +45,12 @@ revoke insert, update, delete, truncate on public.posts from anon, authenticated
 insert into storage.buckets (id, name, public)
 values ('post-images', 'post-images', true)
 on conflict (id) do nothing;
+
+-- Files the admin replaces in place, like the resume (site-files/resume.pdf, served at /resume).
+-- Public read, uploads only with the service_role key, PDFs only.
+insert into storage.buckets (id, name, public, allowed_mime_types)
+values ('site-files', 'site-files', true, array['application/pdf'])
+on conflict (id) do nothing;
+
+-- tell the API layer about the new table right away (fixes "Could not find the table 'public.posts' in the schema cache")
+notify pgrst, 'reload schema';

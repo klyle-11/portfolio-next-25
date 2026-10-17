@@ -10,9 +10,18 @@ import path from 'path';
 import matter from 'gray-matter';
 import { createClient } from '@supabase/supabase-js';
 
+// fall back to admin/.env so `npm run migrate-posts` works without pasting keys
+const envFile = path.join(process.cwd(), 'admin', '.env');
+if (fs.existsSync(envFile)) {
+  for (const line of fs.readFileSync(envFile, 'utf8').split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+  }
+}
+
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or fill in admin/.env)');
   process.exit(1);
 }
 

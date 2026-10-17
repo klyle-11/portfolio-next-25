@@ -36,5 +36,13 @@ export async function uploadImage(file) {
   return url;
 }
 
+export const getResume = () => request('/api/resume');
+
+export const uploadResume = file => request('/api/resume', {
+  method: 'POST',
+  body: file,
+  headers: { 'Content-Type': 'application/pdf' }
+});
+
 // Ask the live site to re-render these pages now instead of waiting for a redeploy.
 export const revalidate = paths => request('/api/revalidate', { method: 'POST', body: { paths } });

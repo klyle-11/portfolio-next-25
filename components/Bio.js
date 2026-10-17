@@ -58,7 +58,7 @@ export default function Bio() {
 application development, CI/CD (contract testing, component testing, Jenkins and Spinnaker deployment pipeline automation), and
 site reliability engineering skills such as monitoring, logging, etc.
                     </p>
-                    <p><a href='/resume925.pdf' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>
+                    <p><a href='/resume' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>
             </div>
 
             </div>
