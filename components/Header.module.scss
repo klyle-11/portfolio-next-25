@@ -9,6 +9,10 @@
     flex-flow: row nowrap;
     justify-content: space-evenly;
     border-bottom: 2px solid #1d163e;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fffffc;
 }
 
 .header {
@@ -16,6 +20,7 @@
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-evenly;
+    align-items: center;
 
     a:link, a:visited, a:active {
         color: black;
@@ -38,6 +43,8 @@
 .construction {
     list-style-type: none;
     text-align: center;
+    margin: .5em 0em;
+    padding: 0em 2em !important;
     @include serif-spaced;
 }
 
@@ -45,8 +52,12 @@
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
+    align-items: center;
     padding-bottom: 1em;
-    margin: auto 0;
+    margin: .5em 0 1em;
+    padding: 0em 2em;
+    width: 100%;
+    gap: 0.5em;
 
     img {
     height: 30px;
@@ -64,6 +75,7 @@
 @media (min-width: 416px) {
     .header {
         flex-flow: row nowrap;
+        align-items: flex-start;
         padding: 1em;
         // margin: 1em;
     }
@@ -80,7 +92,11 @@
     }
 
     .socials {
+        width: auto;
         padding-bottom: 0em;
+        padding: 0em 1em !important;
+        margin: auto 0;
+        justify-content: flex-start;
     }
 }
 

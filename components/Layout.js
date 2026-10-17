@@ -8,6 +8,7 @@ export default function Layout({title, keywords, description, children}) {
                 <title>{title}</title>
                 <meta name='description' content={description} />
                 <meta name='keywords' content={keywords} />
+                <link rel='icon' href='/favicon.ico' />
             </Head>
             <Header />
             <div className='container'>

@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import styles from '../styles/Home.module.css';
+import React from 'react';
 import Link from 'next/link';
 import fs from 'fs';
 import styled from 'styled-components';
-import { StaticRouter as Router, Route, Switch} from 'react-router-dom';
 import Layout from '../components/Layout';
 import Bio from '../components/Bio';
 
@@ -32,7 +28,6 @@ const HomeStyle = styled.div`
 
 export default function Home({slugs}) {
   return(
-    <Router>
     <Layout>    
       <HomeStyle>
         <Bio />
@@ -41,8 +36,8 @@ export default function Home({slugs}) {
           {slugs.map(slug => {
             return (
               <div key={slug}>
-                <Link href={'/blog/' + slug}>
-                  <a> {'/blog/' + slug} </a>
+                <Link href={`/blog/${slug}`}>
+                  {`/blog/${slug}`}
                 </Link>
               </div>
             );
@@ -50,7 +45,6 @@ export default function Home({slugs}) {
         </div>
       </HomeStyle>
     </Layout>
-    </ Router>
   );
 }
 

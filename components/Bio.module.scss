@@ -3,7 +3,8 @@
 .bio {
     padding: 0em 1em;
     margin: 0 1em 2em;
-    text-align: justify;
+    text-align: left;
+    width: 100%;
 }
 
 /* Make this global for site */
@@ -19,56 +20,117 @@
     margin: 1em 1em;
     border: 2px solid black;
     border-radius: 15px;
+
     img {
         width: 100%;
     }
-    a:link, a:visited, a:active {
+
+    video {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin: 1.5em auto 0;
+        border-radius: 10px;
+    }
+
+    a:link,
+    a:visited,
+    a:active {
         color: black;
         text-decoration: none;
     }
 }
 
+.projectText {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.projectMedia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.projectMedia > * {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.projectMedia img,
+.projectMedia video {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.splitCard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+.splitCard .projectMedia video {
+    margin: 0;
+}
+
 /* Tablet */
 
 @media (min-width: 768px) {
+    .bio {
+        width: 50%;
+        margin: 0 0 2em 1em;
+    }
 }
 
 /* Desktop 1280 x 1024 */
 
 @media (min-width: 1280px) {
-    
-    .projectcard {
-        border: 2px solid black;
-        padding: 1.5em;
-        border-radius: 15px;
+    .splitCard {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 2em;
         font-family: serif, 'Footlight MT Light';
-        
-        h4 {
-            letter-spacing: .1em;
-        }
-    
-        img {
-            width: 50%;
-        }
+    }
+
+    .splitCard .projectText,
+    .splitCard .projectMedia {
+        flex: 1 1 50%;
+    }
+
+    .splitCard .projectMedia {
+        justify-content: flex-end;
+    }
+
+    .splitCard .projectMedia > * {
+        width: 100%;
+        max-width: 600px;
     }
 }
 
 /* Desktop 1920 x 1080 */
 
 @media (min-width: 1080px) {
-    
-    .projectcard {
-        border: 2px solid black;
-        padding: 1.5em;
-        border-radius: 15px;
+    .splitCard {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 2em;
         font-family: serif, 'Footlight MT Light';
-        
-        h4 {
-            letter-spacing: .1em;
-        }
-    
-        img {
-            width: 50%;
-        }
+    }
+
+    .splitCard .projectText,
+    .splitCard .projectMedia {
+        flex: 1 1 50%;
+    }
+
+    .splitCard .projectMedia {
+        justify-content: flex-end;
+    }
+
+    .splitCard .projectMedia > * {
+        width: 100%;
+        max-width: 600px;
     }
 }
