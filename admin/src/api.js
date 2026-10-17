@@ -25,7 +25,9 @@ export function savePost({ id, slug, title, description, content_md, status, pub
   return id ? request(`/api/posts/${id}`, { method: 'PATCH', body }) : request('/api/posts', { method: 'POST', body });
 }
 
-export const deletePost = id => request(`/api/posts/${id}`, { method: 'DELETE' });
+export const getDateHistory = id => request(`/api/posts/${id}/history`);
+
+export const deletePost =id => request(`/api/posts/${id}`, { method: 'DELETE' });
 
 export async function uploadImage(file) {
   const { url } = await request(`/api/images?name=${encodeURIComponent(file.name)}`, {
@@ -35,6 +37,11 @@ export async function uploadImage(file) {
   });
   return url;
 }
+
+export const listBlocks = () => request('/api/blocks');
+
+export const saveBlock = ({ key, content_md, path }) =>
+  request(`/api/blocks/${key}`, { method: 'PUT', body: { content_md, path } });
 
 export const getResume = () => request('/api/resume');
 

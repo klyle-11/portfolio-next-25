@@ -4,15 +4,21 @@ import { splitFrontmatter } from '../markdown';
 import RichEditor from './RichEditor';
 import ConfirmDialog from './ConfirmDialog';
 import DateField from './DateField';
-import ResumePanel from './ResumePanel';
+import DateHistory from './DateHistory';
 import { openExternal, today } from '../site';
 
 const slugify = text => text.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
+// status 'published' = public on the site, 'draft' = private (only visible here).
+// Switching between them never touches published_at, so a post keeps its place in the blog.
+const VISIBILITY = { published: 'public', draft: 'private' };
+
 const emptyPost = () => ({ id: null, slug: '', title: '', description: '', content_md: '', status: 'draft', published_at: today() });
 
-export default function Workspace({ siteUrl }) {
+// focusSlug: the post open in the site preview, so navigating there opens it here.
+// onSiteChanged: called after the live site was refreshed, so the preview can reload.
+export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {} }) {
   const [posts, setPosts] = useState([]);
   const [draft, setDraft] = useState(emptyPost);
   const [saved, setSaved] = useState(null); // last saved version of the open post
@@ -88,12 +94,13 @@ export default function Workspace({ siteUrl }) {
         if (wasLive && saved.slug !== row.slug) paths.push(`/blog/${saved.slug}`);
         try {
           const res = await revalidate(paths);
+          if (!res.skipped) onSiteChanged(isLive ? `/blog/${row.slug}` : '/');
           flash('ok', res.skipped ? 'Saved (set SITE_URL and REVALIDATE_SECRET in admin/.env to refresh the site automatically)' : isLive ? 'Saved — live on the site' : 'Saved — removed from the site');
         } catch (err) {
           flash('error', `Saved, but the site didn't refresh: ${err.message}`);
         }
       } else {
-        flash('ok', 'Draft saved');
+        flash('ok', 'Saved — private');
       }
     } catch (err) {
       flash('error', err.message);
@@ -112,7 +119,9 @@ export default function Workspace({ siteUrl }) {
       setBusy(true);
       try {
         await deletePost(draft.id);
-        if (saved?.status === 'published') await revalidate(['/', `/blog/${saved.slug}`]).catch(() => {});
+        if (saved?.status === 'published') {
+          await revalidate(['/', `/blog/${saved.slug}`]).then(() => onSiteChanged('/')).catch(() => {});
+        }
         setPosts(list => list.filter(p => p.id !== draft.id));
         load(emptyPost());
         flash('ok', 'Post deleted');
@@ -137,6 +146,14 @@ export default function Workspace({ siteUrl }) {
       published_at: date && !isNaN(date) ? date.toISOString() : today()
     }, { importedMarkdown: true }));
   };
+
+  // open the post that's showing in the site preview
+  useEffect(() => {
+    if (!focusSlug || focusSlug === draft.slug) return;
+    const post = posts.find(p => p.slug === focusSlug);
+    if (post) guard(() => load(post));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusSlug, posts]);
 
   // ⌘S / Ctrl+S saves
   useEffect(() => {
@@ -171,13 +188,12 @@ export default function Workspace({ siteUrl }) {
             <li key={post.id}>
               <button className={post.id === draft.id ? 'selected' : ''} onClick={() => post.id !== draft.id && guard(() => load(post))}>
                 <span className="post-title">{post.title || 'Untitled'}</span>
-                <span className={`badge ${post.status}`}>{post.status}</span>
+                <span className={`badge ${post.status}`}>{VISIBILITY[post.status] || post.status}</span>
               </button>
             </li>
           ))}
           {!posts.length && <li className="muted empty">No posts yet</li>}
         </ul>
-        <ResumePanel siteUrl={siteUrl} onNotice={flash} />
       </aside>
 
       <main className="editor-pane">
@@ -198,7 +214,22 @@ export default function Workspace({ siteUrl }) {
               />
             </label>
             <DateField value={draft.published_at} onChange={published_at => update({ published_at })} />
+            <div className="visibility" role="radiogroup" aria-label="Visibility">
+              {Object.entries(VISIBILITY).map(([status, label]) => (
+                <button
+                  key={status}
+                  type="button"
+                  role="radio"
+                  aria-checked={draft.status === status}
+                  className={draft.status === status ? 'active' : ''}
+                  onClick={() => draft.status !== status && update({ status })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
+          <DateHistory postId={saved?.id} version={saved?.updated_at} />
           <input
             className="description-input"
             placeholder="Short description (used for the page's meta description)"
@@ -224,17 +255,9 @@ export default function Workspace({ siteUrl }) {
             {isPublished && siteUrl && (
               <button disabled={busy} onClick={() => openExternal(`${siteUrl}/blog/${saved.slug}`)}>View on site ↗</button>
             )}
-            {isPublished ? (
-              <>
-                <button disabled={busy} onClick={() => persist({ status: 'draft' })}>Unpublish</button>
-                <button className="primary" disabled={busy || !dirty} onClick={() => persist()}>Update</button>
-              </>
-            ) : (
-              <>
-                <button disabled={busy} onClick={() => persist({ status: 'draft' })}>Save draft</button>
-                <button className="primary" disabled={busy} onClick={() => persist({ status: 'published' })}>Publish</button>
-              </>
-            )}
+            <button className="primary" disabled={busy || (saved && !dirty)} onClick={() => persist()}>
+              {draft.status === 'published' ? 'Save · public' : 'Save · private'}
+            </button>
           </div>
         </footer>
       </main>

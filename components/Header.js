@@ -51,7 +51,7 @@ export default function Header() {
                 <ul className={styles.headerul}>
                     <li>khalil abdellah</li>
                     <li><a href='mailto:khalil.mktg@gmail.com'>khalil.mktg@gmail.com</a></li>
-                    <li><a href='/resume' target='_blank' rel="noreferrer">resume</a></li>
+                    <li><a href='/resume' target='_blank' rel="noreferrer" data-admin-upload='resume'>resume</a></li>
                 </ul>
                 {/* <ul className={styles.headerul}>
                     <li><Link href='/'>home</Link></li>

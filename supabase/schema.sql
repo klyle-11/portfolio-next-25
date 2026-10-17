@@ -52,5 +52,55 @@ insert into storage.buckets (id, name, public, allowed_mime_types)
 values ('site-files', 'site-files', true, array['application/pdf'])
 on conflict (id) do nothing;
 
--- tell the API layer about the new table right away (fixes "Could not find the table 'public.posts' in the schema cache")
+-- Editable text blocks on site pages (bio, project blurbs…), keyed like "home.bio".
+-- Same access model as posts: anyone can read, only the service_role key can write.
+create table if not exists public.site_blocks (
+  key         text primary key check (key ~ '^[a-z0-9]+([.-][a-z0-9]+)*$'),
+  content_md  text not null default '',
+  path        text not null default '/',
+  updated_at  timestamptz not null default now()
+);
+
+drop trigger if exists site_blocks_touch_updated_at on public.site_blocks;
+create trigger site_blocks_touch_updated_at before update on public.site_blocks
+  for each row execute function public.touch_updated_at();
+
+alter table public.site_blocks enable row level security;
+
+drop policy if exists "site blocks are public" on public.site_blocks;
+create policy "site blocks are public" on public.site_blocks
+  for select to anon, authenticated using (true);
+
+revoke insert, update, delete, truncate on public.site_blocks from anon, authenticated;
+
+-- Every change to a post's date is kept (logged by the database, so no client can skip it).
+-- Private: no policies, so only the service_role key (the local admin) can read it.
+create table if not exists public.post_date_history (
+  id               bigint generated always as identity primary key,
+  post_id          uuid not null references public.posts (id) on delete cascade,
+  old_published_at timestamptz,
+  new_published_at timestamptz,
+  changed_at       timestamptz not null default now()
+);
+
+create index if not exists post_date_history_post_idx on public.post_date_history (post_id, changed_at desc);
+
+alter table public.post_date_history enable row level security;
+revoke all on public.post_date_history from anon, authenticated;
+
+create or replace function public.log_post_date() returns trigger
+language plpgsql set search_path = '' as $$
+begin
+  if tg_op = 'INSERT' or old.published_at is distinct from new.published_at then
+    insert into public.post_date_history (post_id, old_published_at, new_published_at)
+    values (new.id, case when tg_op = 'UPDATE' then old.published_at end, new.published_at);
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists posts_log_date on public.posts;
+create trigger posts_log_date after insert or update of published_at on public.posts
+  for each row execute function public.log_post_date();
+
+-- tell the API layer about the new tables right away (fixes "Could not find the table 'public.posts' in the schema cache")
 notify pgrst, 'reload schema';

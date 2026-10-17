@@ -62,6 +62,8 @@ const COLUMNS = 'id,slug,title,description,content_md,status,published_at,update
 const json = { 'Content-Type': 'application/json', Prefer: 'return=representation' };
 const pickPostFields = body => Object.fromEntries(POST_FIELDS.filter(k => k in body).map(k => [k, body[k]]));
 const isUuid = id => /^[0-9a-f-]{36}$/i.test(id);
+const isBlockKey = key => /^[a-z0-9]+([.-][a-z0-9]+)*$/.test(key);
+const isSitePath = p => typeof p === 'string' && /^\/((blog\/)?[a-z0-9]+(-[a-z0-9]+)*)?$/.test(p);
 
 const api = {
   'GET /api/health': async () => ({
@@ -81,6 +83,10 @@ const api = {
     return rows[0];
   },
 
+  // every date the post has had, newest first (written by a trigger, see supabase/schema.sql)
+  'GET /api/posts/:id/history': ({ id }) =>
+    supabase(`/rest/v1/post_date_history?post_id=eq.${id}&select=old_published_at,new_published_at,changed_at&order=changed_at.desc`),
+
   'DELETE /api/posts/:id': async ({ id }) => {
     await supabase(`/rest/v1/posts?id=eq.${id}`, { method: 'DELETE' });
     return { deleted: id };
@@ -94,6 +100,20 @@ const api = {
     const objectPath = `${new Date().toISOString().slice(0, 7)}/${Date.now()}-${name}`;
     await supabase(`/storage/v1/object/${BUCKET}/${objectPath}`, { method: 'POST', headers: { 'Content-Type': type }, body: bytes });
     return { url: `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/${BUCKET}/${objectPath}` };
+  },
+
+  // editable page text (site_blocks), saved by key and stamped with the page it lives on
+  'GET /api/blocks': () => supabase('/rest/v1/site_blocks?select=key,content_md,path,updated_at&order=key'),
+
+  'PUT /api/blocks/:id': async ({ id, body }) => {
+    if (typeof body.content_md !== 'string') throw httpError(400, 'content_md is required');
+    const row = { key: id, content_md: body.content_md, path: isSitePath(body.path) ? body.path : '/' };
+    const rows = await supabase('/rest/v1/site_blocks?on_conflict=key&select=key,content_md,path,updated_at', {
+      method: 'POST',
+      headers: { ...json, Prefer: 'return=representation,resolution=merge-duplicates' },
+      body: JSON.stringify(row)
+    });
+    return rows[0];
   },
 
   'GET /api/resume': async () => {
@@ -173,10 +193,12 @@ async function handleApi(req, res, url) {
 
   const segments = url.pathname.split('/');
   const id = segments[3];
-  const routeKey = id && segments.length === 4 ? `${req.method} /api/${segments[2]}/:id` : `${req.method} ${url.pathname}`;
+  const routeKey = id && segments.length === 4 ? `${req.method} /api/${segments[2]}/:id`
+    : id && segments.length === 5 ? `${req.method} /api/${segments[2]}/:id/${segments[4]}`
+    : `${req.method} ${url.pathname}`;
   const route = api[routeKey];
   if (!route) return send(res, 404, { error: 'Not found' });
-  if (id && !isUuid(id)) return send(res, 400, { error: 'Bad id' });
+  if (id && !(segments[2] === 'blocks' ? isBlockKey(id) : isUuid(id))) return send(res, 400, { error: 'Bad id' });
 
   try {
     if (routeKey !== 'GET /api/health' && !(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY)) {

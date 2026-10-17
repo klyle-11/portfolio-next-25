@@ -3,8 +3,14 @@ import { useEditor, useEditorState, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { createLowlight, common } from 'lowlight';
 import { Markdown } from '@tiptap/markdown';
 import { MarkdownPaste, MarkdownLinkInput } from '../markdown';
+
+// syntax colors for code blocks, same highlight.js grammars and theme as the site
+const lowlight = createLowlight(common);
+const LANGUAGES = lowlight.listLanguages().sort();
 
 // Rich text editing that reads and writes markdown. `markdown` is only the initial
 // value — remount with a new `key` to load a different post.
@@ -31,7 +37,9 @@ export default function RichEditor({ markdown, onChange, onUploadImage, onError 
   const editor = useEditor({
     extensions: [
       // markdown has no underline syntax, so leave it out
-      StarterKit.configure({ underline: false, link: { openOnClick: false, autolink: true } }),
+      // typing ```java (or any language) + space/enter starts a highlighted code block
+      StarterKit.configure({ underline: false, codeBlock: false, link: { openOnClick: false, autolink: true } }),
+      CodeBlockLowlight.configure({ lowlight }),
       Image,
       Placeholder.configure({ placeholder: 'Write, paste markdown, or type ## for a heading…' }),
       Markdown,
@@ -78,8 +86,8 @@ export default function RichEditor({ markdown, onChange, onUploadImage, onError 
           <span className="toolbar-hint">Editing raw markdown</span>
         )}
         <div className="mode-switch" role="tablist">
-          <button role="tab" aria-selected={mode === 'rich'} className={mode === 'rich' ? 'active' : ''} onClick={() => switchMode('rich')}>Rich text</button>
-          <button role="tab" aria-selected={mode === 'markdown'} className={mode === 'markdown' ? 'active' : ''} onClick={() => switchMode('markdown')}>Markdown</button>
+          <button role="tab" aria-selected={mode === 'rich'} className={mode === 'rich' ? 'active' : ''} onClick={() => switchMode('rich')} title="Rich text">rtf</button>
+          <button role="tab" aria-selected={mode === 'markdown'} className={mode === 'markdown' ? 'active' : ''} onClick={() => switchMode('markdown')} title="Markdown source">.md</button>
         </div>
       </div>
 
@@ -134,6 +142,7 @@ function FormatButtons({ editor, onImage }) {
       orderedList: editor.isActive('orderedList'),
       blockquote: editor.isActive('blockquote'),
       codeBlock: editor.isActive('codeBlock'),
+      codeLang: editor.isActive('codeBlock') ? editor.getAttributes('codeBlock').language || '' : null,
       canUndo: editor.can().undo(),
       canRedo: editor.can().redo()
     })
@@ -171,7 +180,18 @@ function FormatButtons({ editor, onImage }) {
         <B label="•" title="Bullet list (- )" active={state.bulletList} onClick={run(c => c.toggleBulletList())} />
         <B label="1." title="Numbered list (1. )" active={state.orderedList} onClick={run(c => c.toggleOrderedList())} />
         <B label="❝" title="Quote (> )" active={state.blockquote} onClick={run(c => c.toggleBlockquote())} />
-        <B label="{ }" title="Code block (```)" active={state.codeBlock} onClick={run(c => c.toggleCodeBlock())} />
+        <B label="{ }" title="Code block (```java, ```js …)" active={state.codeBlock} onClick={run(c => c.toggleCodeBlock())} />
+        {state.codeLang !== null && (
+          <select
+            className="code-lang"
+            aria-label="Code language"
+            value={state.codeLang}
+            onChange={e => editor.chain().focus().updateAttributes('codeBlock', { language: e.target.value || null }).run()}
+          >
+            <option value="">auto</option>
+            {LANGUAGES.map(lang => <option key={lang} value={lang}>{lang}</option>)}
+          </select>
+        )}
         <B label="―" title="Divider (---)" onClick={run(c => c.setHorizontalRule())} />
         <B label="🖼" title="Insert image (or paste / drop one)" onClick={onImage} />
       </div>

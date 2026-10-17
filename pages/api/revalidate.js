@@ -4,7 +4,8 @@ import { timingSafeEqual } from 'crypto';
 // pages from what's already public in Supabase — it never changes content.
 // Requires REVALIDATE_SECRET (same value in Vercel env and admin/.env).
 
-const PATH_PATTERN = /^\/(blog\/[a-z0-9]+(-[a-z0-9]+)*)?$/;
+// "/", "/some-page" or "/blog/some-post"
+const PATH_PATTERN = /^\/((blog\/)?[a-z0-9]+(-[a-z0-9]+)*)?$/;
 
 const secretMatches = provided => {
   const expected = process.env.REVALIDATE_SECRET || '';

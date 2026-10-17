@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
-import Bio from '../components/Bio';
+import Bio, { BIO_BLOCKS } from '../components/Bio';
 import { getPostSlugs } from '../lib/posts';
+import { getBlocks } from '../lib/blocks';
 
 
 const HomeStyle = styled.div`
@@ -26,11 +27,11 @@ const HomeStyle = styled.div`
   }
 `
 
-export default function Home({slugs}) {
+export default function Home({slugs, blocks}) {
   return(
     <Layout>    
       <HomeStyle>
-        <Bio />
+        <Bio blocks={blocks} />
         <div className='blog' id='blog'>
           Markdown blog posts:
           {slugs.map(slug => {
@@ -51,7 +52,8 @@ export default function Home({slugs}) {
 export const getStaticProps = async () => {
   return {
     props: {
-      slugs: await getPostSlugs()
+      slugs: await getPostSlugs(),
+      blocks: await getBlocks(Object.keys(BIO_BLOCKS))
     }
   }
 }

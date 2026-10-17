@@ -130,3 +130,50 @@ h5 {
       width: 25%;
   }
 }
+
+/* Editable blocks, only highlighted inside the local blog admin preview */
+.admin-preview [data-block] {
+  position: relative;
+  outline: 1px dashed transparent;
+  outline-offset: 4px;
+}
+.admin-preview [data-block]:hover {
+  outline-color: #1d163e;
+}
+.admin-edit-button {
+  display: none;
+  position: absolute;
+  top: -12px;
+  right: 0;
+  font: inherit;
+  font-size: 0.8em;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  color: white;
+  background: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.admin-preview [data-block]:hover > .admin-edit-button {
+  display: block;
+}
+.admin-upload-button {
+  display: none;
+  margin-left: 0.35em;
+  padding: 0 0.3em;
+  font-size: 0.9em;
+  line-height: 1.2;
+  color: black;
+  background: white;
+  border: 1px solid black;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.admin-preview .admin-upload-button {
+  display: inline-block;
+}
+.admin-upload-button:hover {
+  color: white;
+  background: black;
+}

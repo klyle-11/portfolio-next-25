@@ -1,8 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
-import marked from 'marked';
 import Layout from '../../components/Layout';
 import { getPost, getPostSlugs } from '../../lib/posts';
+import { renderMarkdown } from '../../lib/markdown';
 
 const Post = ({ htmlString, data }) => {
     return (
@@ -32,7 +32,7 @@ export const getStaticProps = async ({ params: { slug } }) => {
 
     return {
         props: {
-            htmlString: marked(post.content),
+            htmlString: renderMarkdown(post.content),
             data: post.data
         }
     }

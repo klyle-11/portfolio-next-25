@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Card from './Card';
+import Block from './Block';
 import styles from './Bio.module.scss';
 import styled from 'styled-components';
 
@@ -25,6 +26,34 @@ const TableauStyle = styled.div`
     }
 `
 
+// Text editable from the blog admin (keys are stored in Supabase site_blocks).
+// These are the defaults until a block has been saved once.
+export const BIO_BLOCKS = {
+    'home.bio': {
+        label: 'Bio',
+        fallback: `Full-Stack Software Engineer with background in developing modernized React.js and Typescript services, Java SpringBoot, and C++
+application development, CI/CD (contract testing, component testing, Jenkins and Spinnaker deployment pipeline automation), and
+site reliability engineering skills such as monitoring, logging, etc.`
+    },
+    'home.project-chase-offers': {
+        label: 'Project: Chase Offers',
+        fallback: `Demo of Chase Offers, a mobile and web app I took from Figma to Production with my team. Reusable Storybook.js & React.ts components, and a Reactive Java Spring Boot backend.
+This walkthrough highlights the UX flows, performance and feature toggles.`
+    },
+    'home.project-plastic-bag-props': {
+        label: 'Project: Plastic Bag Props',
+        fallback: 'Data visualization using Tableau, with editorial. Data analysis using Python and Pandas. [Click for article.](/datajournalism)'
+    },
+    'home.project-pomodoro': {
+        label: 'Project: Pomodoro Timer',
+        fallback: 'Productivity aid built with create-react-app framework, Hooks, and Styled Components.'
+    }
+};
+
+const EditableText = ({ id, blocks }) => (
+    <Block id={id} label={BIO_BLOCKS[id].label} md={blocks[id]} fallback={BIO_BLOCKS[id].fallback} />
+);
+
 const FigmaStyle = styled.div`
     .iframe {
         border: 1px solid rgba(0, 0, 0, 0.1);
@@ -33,7 +62,7 @@ const FigmaStyle = styled.div`
 `
 
 
-export default function Bio() {
+export default function Bio({ blocks = {} }) {
     useEffect(() => {
         const fig3 = document.createElement('script');
         
@@ -53,11 +82,7 @@ export default function Bio() {
             <div>
                 <h2>Khalil Abdellah</h2>
                 <p className='serif'>khalil.mktg@gmail.com</p>
-                    <p>
-                        Full-Stack Software Engineer with background in developing modernized React.js and Typescript services, Java SpringBoot, and C++
-application development, CI/CD (contract testing, component testing, Jenkins and Spinnaker deployment pipeline automation), and
-site reliability engineering skills such as monitoring, logging, etc.
-                    </p>
+                    <EditableText id='home.bio' blocks={blocks} />
                     <p><a href='/resume' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>
             </div>
 
@@ -68,10 +93,7 @@ site reliability engineering skills such as monitoring, logging, etc.
             <div className={`${styles.projectcard} ${styles.splitCard}`}>
                 <div className={styles.projectText}>
                     <h3 className='serif'>Chase Offers Demo (2023-2025)</h3>
-                    <p>
-                        Demo of Chase Offers, a mobile and web app I took from Figma to Production with my team. Reusable Storybook.js & React.ts components, and a Reactive Java Spring Boot backend.
-                        This walkthrough highlights the UX flows, performance and feature toggles.
-                    </p>
+                    <EditableText id='home.project-chase-offers' blocks={blocks} />
                 </div>
                 <div className={styles.projectMedia}>
                     <video controls preload='metadata'>
@@ -84,9 +106,7 @@ site reliability engineering skills such as monitoring, logging, etc.
                 <Link href='/datajournalism'>
                     <h3 className='serif'>Plastic Bag Props (2021)</h3>
                 </Link>
-                <p>
-                    Data visualization using Tableau, with editorial. Data analysis using Python and Pandas. <Link href='/datajournalism'>Click for article.</Link>
-                </p>
+                <EditableText id='home.project-plastic-bag-props' blocks={blocks} />
                 <Link href='/datajournalism'>
                     <TableauStyle>
                         <div className='tableauPlaceholder' id='viz1622950425084'>
@@ -113,9 +133,7 @@ site reliability engineering skills such as monitoring, logging, etc.
             <hr />
             <div className={styles.projectcard}>
                 <h3 className='serif'>React Pomodoro Timer (2021)</h3>
-                <p>
-                    Productivity aid built with create-react-app framework, Hooks, and Styled Components.
-                </p>
+                <EditableText id='home.project-pomodoro' blocks={blocks} />
                 <Card />
             </div>
             <hr />
