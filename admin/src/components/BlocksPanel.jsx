@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { listBlocks, saveBlock, uploadImage, revalidate } from '../api';
+import { listBlocks, listPosts, saveBlock, uploadImage, revalidate } from '../api';
 import RichEditor from './RichEditor';
 import ConfirmDialog from './ConfirmDialog';
 
 // Edits the text blocks on the page open in the preview (bio, project blurbs, …).
 // `pageBlocks` comes from the site itself: [{ id, label, md }] with the text it's showing now.
-export default function BlocksPanel({ path, pageBlocks, focusBlock, onSiteChanged }) {
+// onOpenPost({ action: 'new', kind } | { action: 'open', slug }) hands off to the post editor.
+export default function BlocksPanel({ path, pageBlocks, focusBlock, onSiteChanged, onOpenPost }) {
+  const [projects, setProjects] = useState([]);
   const [saved, setSaved] = useState({}); // key → row from Supabase
   const [selected, setSelected] = useState(null);
   const [content, setContent] = useState('');
@@ -14,6 +16,10 @@ export default function BlocksPanel({ path, pageBlocks, focusBlock, onSiteChange
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState(null);
   const [confirm, setConfirm] = useState(null);
+
+  useEffect(() => {
+    listPosts().then(posts => setProjects(posts.filter(p => p.kind === 'project'))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     listBlocks()
@@ -87,6 +93,21 @@ export default function BlocksPanel({ path, pageBlocks, focusBlock, onSiteChange
           Editable text on <code>{path}</code>
           {!pageBlocks.length && ': none on this page.'}
         </p>
+        {path === '/' && (
+          <div className="projects-list">
+            <div className="projects-heading">
+              <span>Projects</span>
+              <button className="primary" onClick={() => onOpenPost({ action: 'new', kind: 'project' })}>+ Add project</button>
+            </div>
+            {projects.map(p => (
+              <button key={p.id} onClick={() => onOpenPost({ action: 'open', slug: p.slug })}>
+                <span className="post-title">{p.title || 'Untitled'}</span>
+                <span className={`badge ${p.status}`}>{p.status === 'published' ? 'public' : 'private'}</span>
+              </button>
+            ))}
+            {!projects.length && <p className="muted">No project posts yet.</p>}
+          </div>
+        )}
         {pageBlocks.map(block => (
           <button key={block.id} className={block.id === selected ? 'selected' : ''} onClick={() => select(block.id)}>
             <span className="post-title">{block.label}</span>

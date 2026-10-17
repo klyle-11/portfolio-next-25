@@ -48,6 +48,7 @@ function Dashboard({ siteUrl }) {
   const [previewPath, setPreviewPath] = useState('/');
   const [reloadKey, setReloadKey] = useState(0);
   const [focusBlock, setFocusBlock] = useState(null);
+  const [postRequest, setPostRequest] = useState(null); // { action: 'new', kind } | { action: 'open', slug }
   const [toast, setToast] = useState(null);
   const frame = useRef(null);
   const resumeInput = useRef(null);
@@ -66,6 +67,10 @@ function Dashboard({ siteUrl }) {
       const msg = e.data || {};
       if (msg.type === 'site:page') {
         setPage({ path: msg.path, blocks: Array.isArray(msg.blocks) ? msg.blocks : [] });
+      } else if (msg.type === 'site:add-post' && (msg.kind === 'project' || msg.kind === 'blog')) {
+        openPost({ action: 'new', kind: msg.kind });
+      } else if (msg.type === 'site:edit-post' && typeof msg.slug === 'string') {
+        openPost({ action: 'open', slug: msg.slug });
       } else if (msg.type === 'site:edit-block') {
         setTab('page');
         if (size === 'closed') setSize('side');
@@ -77,6 +82,13 @@ function Dashboard({ siteUrl }) {
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
   }, [origin, size]);
+
+  // switch the panel to the post editor with a new or existing post
+  function openPost(request) {
+    setTab('posts');
+    setSize(s => (s === 'closed' ? 'side' : s));
+    setPostRequest({ ...request, at: Date.now() });
+  }
 
   const hello = () => frame.current?.contentWindow?.postMessage({ type: 'admin:hello' }, origin);
 
@@ -143,9 +155,9 @@ function Dashboard({ siteUrl }) {
             </nav>
             <div className="panel-body">
               {tab === 'page' ? (
-                <BlocksPanel path={page.path} pageBlocks={page.blocks} focusBlock={focusBlock} onSiteChanged={onSiteChanged} />
+                <BlocksPanel path={page.path} pageBlocks={page.blocks} focusBlock={focusBlock} onSiteChanged={onSiteChanged} onOpenPost={openPost} />
               ) : (
-                <Workspace siteUrl={siteUrl} focusSlug={postSlug} onSiteChanged={onSiteChanged} />
+                <Workspace siteUrl={siteUrl} focusSlug={postSlug} request={postRequest} onSiteChanged={onSiteChanged} />
               )}
             </div>
           </aside>

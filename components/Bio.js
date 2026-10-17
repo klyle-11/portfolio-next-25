@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Card from './Card';
 import Block from './Block';
+import { EMAIL, LINKEDIN_URL, RESUME_URL } from '../lib/links';
 import styles from './Bio.module.scss';
 import styled from 'styled-components';
 
@@ -86,19 +87,19 @@ export default function Bio({ blocks = {}, projects = [] }) {
             <div>
                 <h2>Khalil Abdellah</h2>
                 <EditableText id='home.subtitle' blocks={blocks} className={`serif ${styles.subtitle}`} />
-                <p className='serif'>khalil.mktg@gmail.com</p>
+                <p className='serif'>{EMAIL}</p>
                     <EditableText id='home.bio' blocks={blocks} />
-                    <p><a href='/resume' target='_blank' rel='noreferrer'>Resume</a> | <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel='noreferrer'>LinkedIn</a></p>
+                    <p><a href={RESUME_URL} target='_blank' rel='noreferrer' data-admin-upload='resume'>Resume</a> | <a href={LINKEDIN_URL} target='_blank' rel='noreferrer'>LinkedIn</a></p>
             </div>
 
             </div>
         <div className={styles.projects}>
-            <h2>Projects</h2>
+            <h2 data-admin-add='project'>Projects</h2>
             <hr />
             {/* project posts written in the blog admin */}
             {projects.map(project => (
                 <React.Fragment key={project.slug}>
-                    <div className={styles.projectcard}>
+                    <div className={styles.projectcard} data-admin-post={project.slug}>
                         <Link href={`/blog/${project.slug}`}>
                             <h3 className='serif'>{project.title}{project.date && ` (${project.date})`}</h3>
                         </Link>

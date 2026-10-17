@@ -31,8 +31,18 @@ export default function AdminBridge() {
             describePage();
         };
 
-        // tiny upload icon next to links the admin can replace, like the resume
+        // tiny upload icon next to links the admin can replace (the resume),
+        // and "+ add" next to headings of lists made of posts (Projects)
         const addUploadIcons = () => {
+            document.querySelectorAll('[data-admin-add]').forEach(heading => {
+                if (heading.querySelector('.admin-add-button')) return;
+                const button = document.createElement('button');
+                button.className = 'admin-add-button';
+                button.type = 'button';
+                button.dataset.add = heading.dataset.adminAdd;
+                button.textContent = `+ add ${heading.dataset.adminAdd}`;
+                heading.appendChild(button);
+            });
             document.querySelectorAll('[data-admin-upload]').forEach(link => {
                 if (link.nextElementSibling?.classList.contains('admin-upload-button')) return;
                 const button = document.createElement('button');
@@ -47,6 +57,12 @@ export default function AdminBridge() {
         };
 
         const onClick = event => {
+            const add = event.target.closest('.admin-add-button');
+            if (adminOrigin && add) {
+                event.preventDefault();
+                window.parent.postMessage({ type: 'site:add-post', kind: add.dataset.add }, adminOrigin);
+                return;
+            }
             const upload = event.target.closest('.admin-upload-button');
             if (adminOrigin && upload) {
                 event.preventDefault();
@@ -56,12 +72,15 @@ export default function AdminBridge() {
             const button = event.target.closest('.admin-edit-button');
             if (!adminOrigin || !button) return;
             event.preventDefault();
-            window.parent.postMessage({ type: 'site:edit-block', id: button.parentElement.dataset.block }, adminOrigin);
+            const target = button.parentElement;
+            window.parent.postMessage(target.dataset.adminPost
+                ? { type: 'site:edit-post', slug: target.dataset.adminPost }
+                : { type: 'site:edit-block', id: target.dataset.block }, adminOrigin);
         };
 
         // hover "edit" buttons, added only in admin preview
         const onOver = event => {
-            const block = adminOrigin && event.target.closest('[data-block]');
+            const block = adminOrigin && event.target.closest('[data-block], [data-admin-post]');
             if (!block || block.querySelector(':scope > .admin-edit-button')) return;
             const button = document.createElement('button');
             button.className = 'admin-edit-button';

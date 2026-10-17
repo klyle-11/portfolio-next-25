@@ -132,12 +132,14 @@ h5 {
 }
 
 /* Editable blocks, only highlighted inside the local blog admin preview */
-.admin-preview [data-block] {
+.admin-preview [data-block],
+.admin-preview [data-admin-post] {
   position: relative;
   outline: 1px dashed transparent;
   outline-offset: 4px;
 }
-.admin-preview [data-block]:hover {
+.admin-preview [data-block]:hover,
+.admin-preview [data-admin-post]:hover {
   outline-color: #1d163e;
 }
 .admin-edit-button {
@@ -155,7 +157,8 @@ h5 {
   border-radius: 4px;
   cursor: pointer;
 }
-.admin-preview [data-block]:hover > .admin-edit-button {
+.admin-preview [data-block]:hover > .admin-edit-button,
+.admin-preview [data-admin-post]:hover > .admin-edit-button {
   display: block;
 }
 .admin-upload-button {
@@ -169,6 +172,23 @@ h5 {
   border: 1px solid black;
   border-radius: 3px;
   cursor: pointer;
+}
+.admin-add-button {
+  display: none;
+  margin-left: 0.8em;
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 0.55em;
+  letter-spacing: 0.1em;
+  vertical-align: middle;
+  color: white;
+  background: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.admin-preview .admin-add-button {
+  display: inline-block;
 }
 .admin-preview .admin-upload-button {
   display: inline-block;

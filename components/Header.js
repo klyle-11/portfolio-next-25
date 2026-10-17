@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './Header.module.scss';
+import { EMAIL, GITHUB_URL, LINKEDIN_URL, RESUME_URL } from '../lib/links';
 
 // export const getStaticProps = async () => {
 //     const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=Philadelphia&units=imperial&appid=${process.env.WEATHER_KEY}`);
@@ -50,8 +51,8 @@ export default function Header() {
             <div className={styles.header}>
                 <ul className={styles.headerul}>
                     <li>khalil abdellah</li>
-                    <li><a href='mailto:khalil.mktg@gmail.com'>khalil.mktg@gmail.com</a></li>
-                    <li><a href='/resume' target='_blank' rel="noreferrer" data-admin-upload='resume'>resume</a></li>
+                    <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+                    <li><a href={RESUME_URL} target='_blank' rel="noreferrer" data-admin-upload='resume'>resume</a></li>
                 </ul>
                 {/* <ul className={styles.headerul}>
                     <li><Link href='/'>home</Link></li>
@@ -69,10 +70,10 @@ export default function Header() {
                     {/* <a href='https://twitter.com/abdellica' target='_blank' rel="noreferrer">
                         <img src='/img/twitter.png' alt="link to Khalil Abdellah's Twitter page" />  
                     </a>       */}
-                    <a href='https://linkedin.com/in/khalilabdellah' target='_blank' rel="noreferrer">
+                    <a href={LINKEDIN_URL} target='_blank' rel="noreferrer">
                         <img src='/img/linkedin.png' alt="link to Khalil Abdellah's LinkedIn page" />
                     </a>
-                    <a href='https://github.com/cv-net' target='_blank' rel="noreferrer">
+                    <a href={GITHUB_URL} target='_blank' rel="noreferrer">
                         <img src='/img/github.png' alt="link to Khalil Abdellah's GitHub page" />
                     </a>
                 </div>

@@ -23,7 +23,8 @@ const emptyPost = () => ({
 
 // focusSlug: the post open in the site preview, so navigating there opens it here.
 // onSiteChanged: called after the live site was refreshed, so the preview can reload.
-export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {} }) {
+// request: { action: 'new', kind } or { action: 'open', slug }, from the page text panel or the preview
+export default function Workspace({ siteUrl, focusSlug, request, onSiteChanged = () => {} }) {
   const [posts, setPosts] = useState([]);
   const [draft, setDraft] = useState(emptyPost);
   const [saved, setSaved] = useState(null); // last saved version of the open post
@@ -148,6 +149,21 @@ export default function Workspace({ siteUrl, focusSlug, onSiteChanged = () => {}
       content_md: content.trim()
     }, { importedMarkdown: true }));
   };
+
+  // "+ add project" / "✎ edit" on a project, from the preview or the page text panel
+  const handledRequest = useRef(null);
+  useEffect(() => {
+    if (!request || handledRequest.current === request.at) return;
+    if (request.action === 'new') {
+      handledRequest.current = request.at;
+      return guard(() => load({ ...emptyPost(), kind: request.kind }));
+    }
+    const post = posts.find(p => p.slug === request.slug);
+    if (!post) return; // posts still loading, try again when they arrive
+    handledRequest.current = request.at;
+    if (post.id !== draft.id) guard(() => load(post));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request, posts.length]);
 
   // open the post that's showing in the site preview
   useEffect(() => {

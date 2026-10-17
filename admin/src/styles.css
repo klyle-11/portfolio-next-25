@@ -224,3 +224,8 @@ button.primary:hover:not(:disabled) { background: var(--surface); color: var(--a
 .timestamps { margin: 0; font-size: 0.85rem; }
 .date-history { font-size: 0.85rem; color: var(--muted); }
 .date-history ol { margin: 6px 0 0; padding-left: 20px; }
+
+/* project posts listed in the page text panel */
+.projects-list { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.projects-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-family: var(--serif); letter-spacing: 0.2em; }
+.projects-heading button { width: auto !important; padding: 4px 10px !important; font-family: inherit; letter-spacing: normal; }
