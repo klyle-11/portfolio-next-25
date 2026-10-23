@@ -23,6 +23,7 @@ With no Supabase env vars set, the site reads markdown from `posts/`, so it work
 | `npm run admin:build` then `npm run admin:start` | Admin using the built UI |
 | `npm run admin:app` | Admin as a desktop window (Tauri dev; needs Rust) |
 | `npm run admin:app:build` | Build an installable desktop app |
+| `npm run build:admin:app` | Build the desktop app and install it: `/Applications` on macOS, Start menu on Windows (add `-- --no-install` to only build) |
 | `npm run admin:startup` | Windows: start the desktop admin (dev) when you sign in |
 | `npm run admin:startup:remove` | Windows: stop starting it on sign-in |
 | `npm run admin:app:build:mac` | macOS: build just `Blog Admin.app` (no DMG) |
