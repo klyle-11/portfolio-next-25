@@ -14,6 +14,8 @@
     "admin:start": "npm --prefix admin start",
     "admin:app": "npm --prefix admin run app",
     "admin:app:build": "npm --prefix admin run app:build",
+    "build:admin": "npm --prefix admin run build",
+    "build:admin:app": "npm --prefix admin run app:install",
     "admin:startup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1",
     "admin:startup:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1 -Remove"
   },

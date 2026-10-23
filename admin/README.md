@@ -54,7 +54,10 @@ npm start          # same, using the built UI (run `npm run build` first)
 
 npm run app        # desktop window (Tauri dev mode)
 npm run app:build  # build a desktop app you can keep in your dock / Start menu
+npm run app:install  # build it and install it (same as `npm run build:admin:app` from the repo root)
 ```
+
+`app:install` copies `Blog Admin.app` into `/Applications` (or `~/Applications` if that isn't writable) on macOS, and runs the per-user installer silently on Windows so it shows up in the Start menu. To open it when you log in: macOS → System Settings → General → Login Items → **+**; Windows → Win+R → `shell:startup` and drop its Start menu shortcut in. The app icon is a white (`#fffffc`) version of the site favicon with a thin `#1d163e` outline; the 1024px source is `src-tauri/icons/source.png` (`npx tauri icon src-tauri/icons/source.png` regenerates the rest, then drop the generated `android/` and `ios/` folders).
 
 The desktop app starts `server.mjs` from this folder itself, so keep the repo where it was when you built the app. Node also needs to be installed. Building the desktop app needs Rust plus the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS.
 

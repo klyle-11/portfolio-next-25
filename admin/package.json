@@ -9,6 +9,7 @@
     "tauri": "tauri",
     "app": "tauri dev",
     "app:build": "tauri build",
+    "app:install": "node scripts/build-app.mjs",
     "start": "node server.mjs"
   },
   "dependencies": {
