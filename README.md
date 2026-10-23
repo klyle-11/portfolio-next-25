@@ -18,13 +18,17 @@ With no Supabase env vars set, the site reads markdown from `posts/`, so it work
 | `npm run dev` | Next.js dev server (http://localhost:3000) |
 | `npm run build` / `npm start` | Production build / serve it |
 | `npm run migrate-posts` | One-off: copy `posts/*.md` into Supabase as published posts |
-| `npm run admin:install` | Install the admin's dependencies (run once) |
+| `npm run admin:install` | Install the admin's dependencies (run once; needs Node 20.19+) |
 | `npm run admin` | Admin editor in the browser at http://127.0.0.1:4317 (hot reload) |
 | `npm run admin:build` then `npm run admin:start` | Admin using the built UI |
 | `npm run admin:app` | Admin as a desktop window (Tauri dev; needs Rust) |
 | `npm run admin:app:build` | Build an installable desktop app |
 | `npm run admin:startup` | Windows: start the desktop admin (dev) when you sign in |
 | `npm run admin:startup:remove` | Windows: stop starting it on sign-in |
+| `npm run admin:app:build:mac` | macOS: build just `Blog Admin.app` (no DMG) |
+| `npm run admin:app:install:mac` | macOS: copy the built app into `/Applications` |
+| `npm run admin:startup:mac` | macOS: start the desktop admin (dev) when you log in |
+| `npm run admin:startup:mac:remove` | macOS: stop starting it on login |
 
 ## Blog setup (one time)
 

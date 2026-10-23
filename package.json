@@ -15,7 +15,11 @@
     "admin:app": "npm --prefix admin run app",
     "admin:app:build": "npm --prefix admin run app:build",
     "admin:startup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1",
-    "admin:startup:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1 -Remove"
+    "admin:startup:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/admin-startup.ps1 -Remove",
+    "admin:app:build:mac": "npm --prefix admin run app:build:mac",
+    "admin:app:install:mac": "npm --prefix admin run app:install:mac",
+    "admin:startup:mac": "sh scripts/admin-startup.sh",
+    "admin:startup:mac:remove": "sh scripts/admin-startup.sh --remove"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

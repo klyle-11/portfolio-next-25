@@ -9,6 +9,8 @@
     "tauri": "tauri",
     "app": "tauri dev",
     "app:build": "tauri build",
+    "app:build:mac": "tauri build --bundles app",
+    "app:install:mac": "ditto 'src-tauri/target/release/bundle/macos/Blog Admin.app' '/Applications/Blog Admin.app'",
     "start": "node server.mjs"
   },
   "dependencies": {

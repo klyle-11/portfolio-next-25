@@ -54,9 +54,12 @@ npm start          # same, using the built UI (run `npm run build` first)
 
 npm run app        # desktop window (Tauri dev mode)
 npm run app:build  # build a desktop app you can keep in your dock / Start menu
+
+npm run app:build:mac    # macOS: build just Blog Admin.app (skips the DMG)
+npm run app:install:mac  # macOS: copy it into /Applications
 ```
 
-The desktop app starts `server.mjs` from this folder itself, so keep the repo where it was when you built the app. Node also needs to be installed. Building the desktop app needs Rust plus the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS.
+The desktop app starts `server.mjs` from this folder itself, so keep the repo where it was when you built the app. Node also needs to be installed: 20.19+ (or 22.12+) for Vite 8. On older versions npm skips Vite's native binding and the build fails with `Cannot find module '@rolldown/binding-…'`; reinstall `node_modules` after upgrading. Building the desktop app needs Rust plus the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS.
 
 ## Writing
 
